@@ -1,6 +1,8 @@
 import requests
 import json
 import time
+import random
+from functions import *
 
 accessToken= "f3zM1Gv02ML0AkBDYE5HRIViBuTqct5IoynHIrDL"
 groupId = "46083099"
@@ -79,17 +81,27 @@ def preProcess(line):
         if msg["sender_type"] == "bot": continue
         
         process(msg)
-
 #****************
-def getWeather():
-    url= "https://wttr.in/Pittsburgh?0T&lang=en"
-    r = requests.get(url)
-    return r.text
-    
+
+
 def process(msg):
+    answered = False 
     text = msg["text"].lower()
+    if "gif" in text:
+        send(processGif())
+        
+    if checkForGreeting(text) != None:
+        send(checkForGreeting(text))
+        answered = True 
+    if checkForQuestion(text) != None:
+        send(checkForGreeting(text)) #why doesn't this work??????
+        answered = True 
     if "weather" in text:
         send(getWeather())
+        answered = True 
+  
+    if answered == False:
+        send("oof I don't understand")
     
 #****************
 
