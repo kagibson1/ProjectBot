@@ -87,18 +87,30 @@ def preProcess(line):
 def process(msg):
     answered = False 
     text = msg["text"].lower()
-    if "gif" in text:
-        send(processGif())
         
     if checkForGreeting(text) != None:
+        answered = True 
         send(checkForGreeting(text))
-        answered = True 
+        
     if checkForQuestion(text) != None:
-        send(checkForGreeting(text)) #why doesn't this work??????
         answered = True 
+        send(checkForQuestion(text)) 
+        
     if "weather" in text:
-        send(getWeather())
         answered = True 
+        send(getWeather())
+        
+    if "joke" in text:
+        answered = True
+        send("Here's a bad joke!\n" + getJoke())
+        
+    if "cat" and "fact" in text:
+        answered = True
+        send("Here's a cat fact!\n'" + getCatFact())
+        
+    if checkForTermination(text) != None:
+        answered = True 
+        send(checkForTermination(text))
   
     if answered == False:
         send("oof I don't understand")
