@@ -3,6 +3,7 @@ import json
 import time
 import random
 from functions import *
+from nlpWork import *
 
 accessToken= "f3zM1Gv02ML0AkBDYE5HRIViBuTqct5IoynHIrDL"
 groupId = "46083099"
@@ -87,6 +88,7 @@ def preProcess(line):
 def process(msg):
     answered = False 
     text = msg["text"].lower()
+    
         
     if checkForGreeting(text) != None:
         answered = True 
@@ -111,9 +113,9 @@ def process(msg):
     if checkForTermination(text) != None:
         answered = True 
         send(checkForTermination(text))
-  
+    
     if answered == False:
-        send("oof I don't understand")
+        send("IDK WHOOPS")
     
 #****************
 
