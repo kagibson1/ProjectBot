@@ -1,39 +1,50 @@
 import random
 import os 
-from textblob import TextBlob
 import nltk 
 
 
+#functions based off of Liza Daly's tutorial "Chatbot Fundamentals: An Interactive Guide to Writing Bots in Python"
+#and using nltk.org
 def constructResponse(pronoun, noun, verb):
-
-    response = []
-    
+    response = [] 
+    #to be able to see while testing 
     print("response = ", response)
     print("pronoun =", pronoun) 
     print("noun = ", noun)
     print("verb =", verb) 
     
+    #make sure not to append None
     if pronoun != None: 
         response.append(pronoun)
-    
+        
+    #adds verb and noun to form whole sentence now 
     if verb != None:
         verbWord = verb[0]
+        print(verbWord)
         if verbWord in ("b", "am", "is", "'m" ):
             if pronoun.lower() == "you":
-                response.append("are really")
-            else:
-                response.append(verbWord)
-    
-    if noun != None:
-        if startsWithVowel(noun):
-            pronoun = "an" 
+                response.append("are actually")
+                if noun != None:
+                    if startsWithVowel(noun):
+                        articles = "an" 
+                    else:
+                        articles = "a"
+                    response.append(articles + " " + noun)
+                
         else:
-            pronoun = "a"
-        response.append(pronoun + " " + noun)
-    
+            print(verbWord)
+            response.append(verbWord)
+            
+            if noun != None:
+                if startsWithVowel(noun):
+                    articles = "an" 
+                else:
+                    articles = "a"
+                response.append(articles + " " + noun)
+                print(response)
     return " ".join(response)
 
-def handlePronounsWeird(msg):
+def handlePronounsWeird(msg): #makes sure that it recognizes i as a pronoun 
     edited = []
     unedited = msg.split(' ')
     for word in unedited:
@@ -42,6 +53,7 @@ def handlePronounsWeird(msg):
         if word =="i'm":
             word = "I'm"
         edited.append(word)
+        print(edited)
     return ' '.join(edited)
 
 def startsWithVowel(word):
@@ -50,13 +62,13 @@ def startsWithVowel(word):
     else:
         return False 
 
-def tokenizeAndTag(msg):#guidance from nltk website 
+def tokenizeAndTag(msg): 
     tokens = nltk.word_tokenize(msg)
     pos = nltk.pos_tag(tokens)
     return pos 
 
 
-def choosePronoun(msg):
+def choosePronoun(msg):#switches pronouns from You to I vice versa as suggested by tutorial
     pronoun = None
     for word, partOfSpeech in tokenizeAndTag(msg):
         if partOfSpeech == "PRP" and word.lower() == "you":
@@ -65,7 +77,7 @@ def choosePronoun(msg):
             pronoun = "You"
     return pronoun
 
-def chooseVerb(msg):
+def chooseVerb(msg):#looks for VB (verb), guided by tutorial
     verb = None
     pos = None
     for word, partOfSpeech in tokenizeAndTag(msg):
@@ -75,7 +87,7 @@ def chooseVerb(msg):
             break 
     return verb, pos
     
-def chooseNoun(msg):
+def chooseNoun(msg): #guided by tutorial
     noun = None
     for word, partOfSpeech in tokenizeAndTag(msg):
         if partOfSpeech == "NN":
@@ -83,7 +95,7 @@ def chooseNoun(msg):
             break
     return noun
     
-def chooseAdjective(msg):
+def chooseAdjective(msg): #guided by tutorial
     adjective = None
     for word, partOfSpeech in tokenizeAndTag(msg):
         if partOfSpeech == "JJ":
@@ -91,7 +103,7 @@ def chooseAdjective(msg):
             break
     return adjective
 
-def findPOS(msg):
+def findPOS(msg): 
     print(msg)
     pronoun = choosePronoun(msg)
     verb = chooseVerb(msg)
@@ -105,22 +117,20 @@ def actuallyRespond(msg):
     noun = findPOS(cleaned)[3]
     adjective = findPOS(cleaned)[2]
     verb = findPOS(cleaned)[1]
-    response = None 
-    
-    
+    print(verb)
+    response = None     
     if pronoun == None:
         response = "I agree totally!"
     elif pronoun == "I" and verb == None:
-        response == "I'm pretty cool aren't I?"
+        response == "I'm pretty cool, right? This is a hard project, my dude."
     else:
         response = constructResponse(pronoun, noun, verb)
     if response == None:
         return "sorry mate I don't know what you're saying since ya got thru this"
     return response 
-    
 
-            
+##Test it here 
+#text='I like orange'
+#respond = actuallyRespond(text)
+#print(respond)    
 
-            
-    
-    

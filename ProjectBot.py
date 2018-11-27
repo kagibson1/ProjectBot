@@ -4,6 +4,7 @@ import time
 import random
 from functions import *
 from nlpWork import *
+import datetime 
 
 accessToken= "f3zM1Gv02ML0AkBDYE5HRIViBuTqct5IoynHIrDL"
 groupId = "46083099"
@@ -89,14 +90,19 @@ def process(msg):
     answered = False 
     text = msg["text"].lower()
     
-        
+    if checkForBadWords(text) != None:
+        answered = True
+        send(checkForBadWords(text))
+    
     if checkForGreeting(text) != None:
         answered = True 
         send(checkForGreeting(text))
+    # 
+    # if ("RA" or "resident assistant") and ("on duty" or "right now") in text:
+    #     answered = True
+    #     send(getRADonner())
+    #     
         
-    if checkForQuestion(text) != None:
-        answered = True 
-        send(checkForQuestion(text)) 
         
     if "weather" in text:
         answered = True 
@@ -109,13 +115,20 @@ def process(msg):
     if "cat" and "fact" in text:
         answered = True
         send("Here's a cat fact!\n'" + getCatFact())
+
+#**********************set all personalized questions and answers above here
+        
+    if checkForQuestion(text) != None:
+        answered = True 
+        send(getAnswer(text)) 
+        
         
     if checkForTermination(text) != None:
         answered = True 
         send(checkForTermination(text))
     
     if answered == False:
-        send("IDK WHOOPS")
+        send(actuallyRespond(text))
     
 #****************
 
