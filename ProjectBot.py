@@ -1,10 +1,23 @@
 import requests
 import json
-import time
 import random
 from functions import *
 from nlpWork import *
-import datetime 
+from food import *
+import time
+
+
+#tp2 timesheet
+#tuesday nov 20 -- 4
+#wednesday nov 21 -- 1
+#thursday nov 22 -- 0
+#friday nov 23 -- 4
+#saturday nov 24 -- 1
+#sunday nov 25 -- 3
+#monday nov 26 -- 5 
+#tuesday nov 27 -- 5
+#wednesday nov 28 -- 2
+
 
 accessToken= "f3zM1Gv02ML0AkBDYE5HRIViBuTqct5IoynHIrDL"
 groupId = "46083099"
@@ -88,45 +101,101 @@ def preProcess(line):
 
 def process(msg):
     answered = False 
+    restyCheck = msg["text"]
     text = msg["text"].lower()
     
+    #makes sure we avoid profanity
     if checkForBadWords(text) != None:
         answered = True
         send(checkForBadWords(text))
     
+    #check for keywords in message
     if checkForGreeting(text) != None:
         answered = True 
         send(checkForGreeting(text))
-    # 
-    # if ("RA" or "resident assistant") and ("on duty" or "right now") in text:
-    #     answered = True
-    #     send(getRADonner())
-    #     
         
-        
+    #I love Schatz...I want to do more with positive/negative words for TP3 so this was a start 
+    if "schatz" in text and "is" in text:
+        positiveWords= set(["good", "awesome", "tasty", "fantastic", "wonderful", "fun", "love"])
+        negativeWords= set(["terrible", "bad", "gross", "hate"])
+        for words in text.split(" "): 
+            if words in positiveWords:
+                print(words in positiveWords)
+                send("Schatz is fantastic my friend")
+            if words in negativeWords:
+                answered = True
+                send("Sir, I will have to disagree on this one")
+                
+    
+    #sends message of name of who is on duty right now -- it's hardcoded for now by date
+    if ("ra" or "resident assistant") and ("on duty" or "right now") in text:
+        answered = True
+        send("The RA on duty right now in Donner is " + getRADonner())
+    
+    #returns current *PITTSBURGH* weather 
     if "weather" in text:
         answered = True 
         send(getWeather())
-        
+    
+    #tells you a terrible joke
     if "joke" in text:
         answered = True
         send("Here's a bad joke!\n" + getJoke())
-        
+    
+    #sends random cat fact
     if "cat" and "fact" in text:
         answered = True
         send("Here's a cat fact!\n'" + getCatFact())
+    
+    #sends time closed of restaurant inputted / restuarant that it would autcorrect to if close
+    if ("time" in text) and ("close" in text) and checkForRestaurants(restyCheck) != None:
+        answered = True 
+        restaurant = checkForRestaurants(restyCheck)
+        closingTime = whatTimeDoesThisPlaceClose(restaurant)
+        if len(closingTime) > 1:
+            send(restaurant + " closes at " + closingTime[0] + " and " + closingTime[1])
+        else: send(restaurant + " closes at " + closingTime[0])
+    
+    #sends time open of restaurant inputted / restaurant that it would autcorrect to if close
+    if ("time" in text) and ("open" in text) and checkForRestaurants(restyCheck) != None:
+        answered = True 
+        restaurant = checkForRestaurants(restyCheck)
+        openingTime = whatTimeDoesThisPlaceOpen(restaurant)
+        if len(openingTime) > 1:
+            send(restaurant + " opens at " + openingTime[0] + " and " + openingTime[1])
+        else: send(restaurant + " opens at " + openingTime[0])
+    
+    #sends whether or not the restaurant / restaurant it would autocorrect to if close is currently open
+    if "is" in text and "open" in text and checkForRestaurants(restyCheck) != None:
+        answered = True
+        restaurant = checkForRestaurants(restyCheck)
+        if isThisPlaceOpen(restaurant) == True:
+            send("Yeah! " + restaurant + " is open right now")
+        else: send("Sorry bud try another restaurant because " + restaurant + " is closed right now" )
+     
+    #sends a formatted list of the restaurants that are open on campus right now    
+    if answered == False and ("food" or "restaurants") and ("open" or "now") in text:
+        answered = True 
+        answer = " "
+        open = list(whatsOpenRightNow())
+        for elem in range(len(open)-1):
+            answer += open[elem] + ", "
+        answer += open[-1]
+        send("These are the locations on campus that are open right now:" + answer)
 
 #**********************set all personalized questions and answers above here
-        
-    if checkForQuestion(text) != None:
+     
+    #if we can't answer a question, then bop it to Wolfram Alpha so we don't look dumb 
+    if answered == False and checkForQuestion(text) != None:
         answered = True 
         send(getAnswer(text)) 
         
-        
+    #check to see if a user wants to end the conversation 
     if checkForTermination(text) != None:
         answered = True 
         send(checkForTermination(text))
     
+    #finally, if there's not a response yet, construct a response 
     if answered == False:
         send(actuallyRespond(text))
     
