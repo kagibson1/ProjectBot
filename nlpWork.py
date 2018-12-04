@@ -49,7 +49,7 @@ def constructResponse(pronoun, noun, verb): #guided by tutorial
                 print(response)
     return " ".join(response)
 
-def handlePronounsWeird(msg): #makes sure that it recognizes i as a pronoun 
+def handlePronounsWeird(msg): #makes sure that it recognizes i as a pronoun, guided by tutorial 
     edited = []
     unedited = msg.split(' ')
     for word in unedited:
@@ -61,7 +61,9 @@ def handlePronounsWeird(msg): #makes sure that it recognizes i as a pronoun
         print(edited)
     return ' '.join(edited)
 
-def startsWithVowel(word): #check to see if your word starts with a vowel so you can handle it later
+#check to see if your word starts with a vowel so you can handle it later 
+#(it's in the tutorial but also like I figured it out and know how to do this)
+def startsWithVowel(word): 
     if word[0] in "aeiou":
         return True
     else:

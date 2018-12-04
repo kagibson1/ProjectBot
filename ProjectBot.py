@@ -7,17 +7,15 @@ from food import *
 import time
 
 
-#tp2 timesheet
-#tuesday nov 20 -- 4
-#wednesday nov 21 -- 1
-#thursday nov 22 -- 0
-#friday nov 23 -- 4
-#saturday nov 24 -- 1
-#sunday nov 25 -- 3
-#monday nov 26 -- 5 
-#tuesday nov 27 -- 5
-#wednesday nov 28 -- 2
+#tp3 timesheet
+#sunday dec 2: 1:30 pm - 2:30 pm 
+#monday dec 3: 4:30 Am - 6 am, 12:00-1:30 pm, 7:30-8:15 pm, 10:00-11:30 pm
+#tuesday dec 4: 10:30 am - 12:00 pm 
+#wednesday dec 5:
+#ahhhhh thursday dec 6:
 
+prevMess = {"what the fudge": "WAYOOOOOOO"}
+lastMessage = ""
 
 accessToken= "f3zM1Gv02ML0AkBDYE5HRIViBuTqct5IoynHIrDL"
 groupId = "46083099"
@@ -98,24 +96,51 @@ def preProcess(line):
         process(msg)
 #****************
 
-
+ 
 def process(msg):
+    global lastMessage
+    print(prevMess)
     answered = False 
     restyCheck = msg["text"]
-    text = msg["text"].lower()
+    text = msg["text"].lower() 
+    print(text)
+    print(text in prevMess)
+    
+    #fix the input if there's a change to be made 
+    isChange = fixInput(text, prevMess, lastMessage)
+    
+    if isChange != None and answered == False:
+        answered = True 
+        send(isChange)
+        
+    #speeds it up!
+    if text in prevMess and answered == False: 
+        answered = True 
+        lastMessage = prevMess[text]
+        send( prevMess[text] )  
     
     #makes sure we avoid profanity
-    if checkForBadWords(text) != None:
+    if checkForBadWords(text) != None and answered == False:
         answered = True
         send(checkForBadWords(text))
     
     #check for keywords in message
-    if checkForGreeting(text) != None:
+    if checkForGreeting(text) != None and answered == False:
         answered = True 
         send(checkForGreeting(text))
         
-    #I love Schatz...I want to do more with positive/negative words for TP3 so this was a start 
-    if "schatz" in text and "is" in text:
+    if checkForAboutMe(text) != None and answered == False:
+        answered = True 
+        send(checkForAboutMe(text))
+        
+    checkCourseStuff = appropCourseResponse(text)
+    if checkCourseStuff != None:
+        answered = True
+        send(checkCourseStuff)
+    
+        
+    #swim team <3s schatz
+    if "schatz" in text and "is" in text and answered == False:
         positiveWords= set(["good", "awesome", "tasty", "fantastic", "wonderful", "fun", "love"])
         negativeWords= set(["terrible", "bad", "gross", "hate"])
         for words in text.split(" "): 
@@ -128,53 +153,78 @@ def process(msg):
                 
     
     #sends message of name of who is on duty right now -- it's hardcoded for now by date
-    if ("ra" or "resident assistant") and ("on duty" or "right now") in text:
+    if ("ra" or "resident assistant") and ("on duty" or "right now") in text and answered == False:
         answered = True
         send("The RA on duty right now in Donner is " + getRADonner())
     
     #returns current *PITTSBURGH* weather 
-    if "weather" in text:
+    if "weather" in text and answered == False:
         answered = True 
         send(getWeather())
     
     #tells you a terrible joke
-    if "joke" in text:
+    if "joke" in text and answered == False:
         answered = True
         send("Here's a bad joke!\n" + getJoke())
     
     #sends random cat fact
-    if "cat" and "fact" in text:
+    if "cat" and "fact" in text and answered == False:
         answered = True
         send("Here's a cat fact!\n'" + getCatFact())
+        
+
+    if answered == False and ("time" in text or "open" in text) and ("food" not in text and "restaurants" not in text):
+        findRest = checkForRestaurants(restyCheck)
     
     #sends time closed of restaurant inputted / restuarant that it would autcorrect to if close
-    if ("time" in text) and ("close" in text) and checkForRestaurants(restyCheck) != None:
+    if answered == False and ("time" in text) and ("close" in text) and findRest != None:
         answered = True 
-        restaurant = checkForRestaurants(restyCheck)
+        restaurant = findRest
         closingTime = whatTimeDoesThisPlaceClose(restaurant)
         if len(closingTime) > 1:
-            send(restaurant + " closes at " + closingTime[0] + " and " + closingTime[1])
-        else: send(restaurant + " closes at " + closingTime[0])
+            response = restaurant + " closes at " + closingTime[0] + " and " + closingTime[1]
+            prevMess[text] = response
+            lastMessage = text
+            send(response)
+        else: 
+            response = restaurant + " closes at " + closingTime[0]
+            prevMess[text] = response
+            lastMessage = text
+            send(response)
     
     #sends time open of restaurant inputted / restaurant that it would autcorrect to if close
-    if ("time" in text) and ("open" in text) and checkForRestaurants(restyCheck) != None:
+    if answered == False and ("time" in text) and ("open" in text) and findRest != None:
         answered = True 
-        restaurant = checkForRestaurants(restyCheck)
+        restaurant = findRest
         openingTime = whatTimeDoesThisPlaceOpen(restaurant)
         if len(openingTime) > 1:
-            send(restaurant + " opens at " + openingTime[0] + " and " + openingTime[1])
-        else: send(restaurant + " opens at " + openingTime[0])
+            response = restaurant + " opens at " + openingTime[0] + " and " + openingTime[1]
+            prevMess[text] = response
+            lastMessage = text
+            send(response)
+        else: 
+            response = restaurant + " opens at " + openingTime[0]
+            prevMess[text] = response
+            lastMessage = text
+            send(response)
     
     #sends whether or not the restaurant / restaurant it would autocorrect to if close is currently open
-    if "is" in text and "open" in text and checkForRestaurants(restyCheck) != None:
+    if answered == False and "is" in text and "open" in text and findRest != None:
         answered = True
-        restaurant = checkForRestaurants(restyCheck)
+        restaurant = findRest
         if isThisPlaceOpen(restaurant) == True:
-            send("Yeah! " + restaurant + " is open right now")
-        else: send("Sorry bud try another restaurant because " + restaurant + " is closed right now" )
+            response = "Yeah! " + restaurant + " is open right now"
+            prevMess[text] = response
+            lastMessage = text
+            send(response)
+        else: 
+            response = "Sorry bud try another restaurant because " + restaurant + " is closed right now" 
+            prevMess[text] = response
+            lastMessage = text
+            send(response)
      
     #sends a formatted list of the restaurants that are open on campus right now    
-    if answered == False and ("food" or "restaurants") and ("open" or "now") in text:
+    if answered == False and ("food" in text or "restaurants" in text) and ("open" in text or "now" in text):
         answered = True 
         answer = " "
         open = list(whatsOpenRightNow())
@@ -182,6 +232,7 @@ def process(msg):
             answer += open[elem] + ", "
         answer += open[-1]
         send("These are the locations on campus that are open right now:" + answer)
+        
 
 #**********************set all personalized questions and answers above here
      
@@ -197,7 +248,12 @@ def process(msg):
     
     #finally, if there's not a response yet, construct a response 
     if answered == False:
-        send(actuallyRespond(text))
+        response = actuallyRespond(text)
+        prevMess[text] = response
+        lastMessage = text
+        send(response)
+        
+    print(prevMess)
     
 #****************
 
@@ -208,4 +264,3 @@ if __name__ == "__main__":
     while True:
         getNew(clientId, numCalls)
         numCalls += 1
-    

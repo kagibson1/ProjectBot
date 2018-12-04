@@ -148,7 +148,7 @@ restaurantsWeekdays = [
 ["Resnik Cafe", (0,120), (420,1439)],
 ["Create", (630, 1260)],
 ["Cucina", (660, 1380)],
-["ElGallo", (630,1320)],
+["El Gallo", (630,1320)],
 ["Entropy", (0,180), (450,1439)],
 ["Exchange", (480,1200)],
 ["Gingers Express", (480, 960)],

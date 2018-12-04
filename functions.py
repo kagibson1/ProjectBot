@@ -29,6 +29,15 @@ def getRADonner():
         return "Matt"
     elif findDate() == "Sunday":
         return "Kat"
+        
+def fixInput(text, prevMess, lastMessage):
+    print("THIS IS TEXT" + text)
+    if "‘" in text:
+        weSplit = text.split("‘")
+        print("we split", weSplit)
+        if weSplit[0].strip() == "did you mean":
+            prevMess[lastMessage] = weSplit[1][:-1]
+            return("Yeah I meant " +  weSplit[1][:-1])
 
 #checks to see if text contains a restaurant name or if it contains something ish close to a restuarant name 
 #need to tweak to make faster for long inputs (it does work it just isn't great ui)
@@ -120,7 +129,7 @@ def checkForQuestion(text):
     questionWords = ["who", "what", "where", "when", "why", "how"]
     for i in questionWords:
         if i in text:
-            return("You asked a question hehe let me think and give me a sec")
+            return(i)
 
 #returns a reandom cat fact from this website
 def getCatFact():
@@ -145,7 +154,7 @@ def checkForTermination(text):
 #bad words we don't want chatbot responding to, list from https://github.com/dariusk/wordfilter and then added what friends were putting into the bot yikes
 filter_words = set([ "ass", "fucking", "beeyotch", "biatch", "bitch", "chinaman",    
     "chinamen", "fuck", "dickwad", "dumbass", "shit", "fuckeroni", "shithead", 
-    "poopy", "crap", "fuq", "dipshit", "riptard", "dumbnut", "Emmanuel", "EJ"
+    "poopy", "crap", "fuq", "dipshit", "riptard", "dumbnut", "emmanuel", "ej"
     "chink", "crazie", "crazy", "crip", "cunt", "dago", "daygo", "dego", "dick",
     "dumb", "douchebag", "dyke", "fag", "fatass", "fatso", "gash", "gimp",
     "golliwog", "gook", "gyp", "halfbreed", "half-breed", "homo", "hooker",
@@ -159,3 +168,56 @@ def checkForBadWords(text):
     for words in filter_words:
         if words in text:
             return ("I am sorry but this chatbot does not support profanity, please send another message but with kindness thanks")
+            
+def checkForAboutMe(msg):
+    meInfo = {"name": "My name is ProjectBot", "age": "I am " + str(date.toordinal(date.today()) - date.toordinal(date(2018,11,16))) + " days old", "why": "I was made for the 15-112 Term Project!"  }
+    
+    if checkForQuestion(msg) != None and ("you" in msg or "your" in msg):
+        if "name" in msg:
+            return meInfo["name"]
+        elif "old" in msg or "age" in msg:
+            return meInfo["age"]
+        if "created" in msg or "made" in msg:
+            return meInfo["why"]
+
+#from json documentation, cmu course data from scotty labs github (https://github.com/ScottyLabs/course-api)
+data = json.loads(open("cmu_course_data.json", "r").read())
+
+def isCourse(str): #checks to see if a certain string is in course format of XX-XXX
+    digits = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"]
+    if len(str) == 7 and str[6] == "?":
+        str = str[0:6]
+    if (len(str) != 6):
+        return None
+    
+    if (str[0] in digits and str[1] in digits and str[2] == "-" and str[3] in digits and str[4] in digits and str[5] in digits):
+        return str 
+
+#finds the course from the whole text
+def findCourse(text): 
+    for words in text.split(" "):
+        if isCourse(words) != None:
+            return isCourse(words)
+ 
+#based on contents of input will return the correct course information
+def appropCourseResponse(text):
+    course = findCourse(text)
+    if course not in data["courses"]:
+        return "That's not a valid course at CMU during Fall 2018"
+    if "units" in text:
+        return("The number of units of " + course + " is " + str(data["courses"][course]["units"]))
+    if "prereqs" in text:
+        prereqs =  data["courses"][course]["prereqs"]
+        if prereqs == None:
+            return ("The prereqs for " + course + " are nonexistent yeehaw!")
+        if coreqs != None:
+            return ("The prereqs for " + course + " are " + data["courses"][course]["prereqs"])
+    if "coreqs" in text:
+        coreqs =  data["courses"][course]["coreqs"]
+        if coreqs == None:
+            return ("The coreqs for " + course + " are nonexistent yeehaw!")
+        if coreqs != None:
+            return ("The coreqs for " + course + " are " + data["courses"][course]["coreqs"])
+    if "description" in text:
+        return ("Here is the course description for " + course + ": " + data["courses"][course]["desc"])
+    
