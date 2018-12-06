@@ -36,7 +36,8 @@ def fixInput(text, prevMess, lastMessage):
         weSplit = text.split("‘")
         print("we split", weSplit)
         if weSplit[0].strip() == "did you mean":
-            prevMess[lastMessage] = weSplit[1][:-1]
+            value = weSplit[1][:-1]
+            prevMess[lastMessage] = value[0].upper() + value[1:]
             return("Yeah I meant " +  weSplit[1][:-1])
 
 #checks to see if text contains a restaurant name or if it contains something ish close to a restuarant name 
@@ -115,7 +116,7 @@ def getAnswer(msg):
 
 #returns a random greeting
 def sayHello():
-    return random.choice(["Hello", "Vas happenin!!", "Hey hey"])
+    return random.choice(["Hello", "Hey!", "Hey hey"])
 
 #checks for greeting in the text
 def checkForGreeting(text):
@@ -135,6 +136,7 @@ def checkForQuestion(text):
 def getCatFact():
     url = "https://catfact.ninja/fact"
     r = requests.get(url)
+    print(r.json()["fact"])
     return(r.json()["fact"])
 
 #from Jacob Strieb, returns random dad joke from website 
@@ -155,7 +157,7 @@ def checkForTermination(text):
 filter_words = set([ "ass", "fucking", "beeyotch", "biatch", "bitch", "chinaman",    
     "chinamen", "fuck", "dickwad", "dumbass", "shit", "fuckeroni", "shithead", 
     "poopy", "crap", "fuq", "dipshit", "riptard", "dumbnut", "emmanuel", "ej"
-    "chink", "crazie", "crazy", "crip", "cunt", "dago", "daygo", "dego", "dick",
+    "chink", "crazie", "crazy", "cunt", "dago", "daygo", "dego", "dick",
     "dumb", "douchebag", "dyke", "fag", "fatass", "fatso", "gash", "gimp",
     "golliwog", "gook", "gyp", "halfbreed", "half-breed", "homo", "hooker",
     "idiot", "insane", "insanitie", "insanity", "jap", "kike", "kraut", 
@@ -203,14 +205,14 @@ def findCourse(text):
 def appropCourseResponse(text):
     course = findCourse(text)
     if course not in data["courses"]:
-        return "That's not a valid course at CMU during Fall 2018"
+        return None
     if "units" in text:
         return("The number of units of " + course + " is " + str(data["courses"][course]["units"]))
     if "prereqs" in text:
         prereqs =  data["courses"][course]["prereqs"]
         if prereqs == None:
             return ("The prereqs for " + course + " are nonexistent yeehaw!")
-        if coreqs != None:
+        if prereqs != None:
             return ("The prereqs for " + course + " are " + data["courses"][course]["prereqs"])
     if "coreqs" in text:
         coreqs =  data["courses"][course]["coreqs"]
@@ -221,3 +223,18 @@ def appropCourseResponse(text):
     if "description" in text:
         return ("Here is the course description for " + course + ": " + data["courses"][course]["desc"])
     
+def extractKey(text, prevMess):
+    if "remember that if i say " in text:
+        first = text.split("remember that if i say ")
+        print(first)
+        second = first[1].split("you say ")
+        print(second)
+        key = second[0].strip()
+        print(key)
+        print(key == "kellen is awesome")
+        value = second[1].strip()
+        value = value[0].upper() + value[1:]
+        print(value)
+        prevMess[key] = value
+        print(prevMess)
+        return("Noted!")

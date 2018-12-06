@@ -133,6 +133,10 @@ def process(msg):
         answered = True 
         send(checkForAboutMe(text))
         
+    if extractKey(text, prevMess)!= None:
+        answered = True
+        send("Noted!")
+        
     checkCourseStuff = appropCourseResponse(text)
     if checkCourseStuff != None:
         answered = True
@@ -170,7 +174,7 @@ def process(msg):
     #sends random cat fact
     if "cat" and "fact" in text and answered == False:
         answered = True
-        send("Here's a cat fact!\n'" + getCatFact())
+        send("Here's a cat fact!\n" + getCatFact())
         
 
     if answered == False and ("time" in text or "open" in text) and ("food" not in text and "restaurants" not in text):
@@ -186,7 +190,7 @@ def process(msg):
             prevMess[text] = response
             lastMessage = text
             send(response)
-        else: 
+        else:  
             response = restaurant + " closes at " + closingTime[0]
             prevMess[text] = response
             lastMessage = text
