@@ -1,5 +1,5 @@
 ProjectBot by Kellen Gibson (video demonstration: https://www.youtube.com/watch?v=W11rZMJmuLs)
-
+Created for 15-112 at Carnegie Mellon University as a term project Fall 2018. 
 
 My ProjectBot is a chatbot that will take in input from the user and figure out and return an appropriate response. It constructs a response and then keeps track of the input and output pairs with a dictionary and has a variable that keeps track of the last input. Some of the ways that it constructs responses includes by using the minimum number of edits to handle restaurant name misspellings, keywords to decide if you want to know what restaurants are open, what time a restaurant opens, what time a restaurant closes, and if a restaurant is open. It goes through CMU courses (as JSON) to get specific information about the course (name, description, units, prereqs, coreqs, etc) based on keywords and if you don’t ask a question – constructs a response with NLP that can be edited to be more grammatically correct by the user. It can be trained to give a specific response to an input set by the user. Furthermore, it looks up questions on Wolfram Alpha, dad jokes, weather, and cat jokes using various APIs. It can also detect greetings, terminations, profanity, and answer some basic questions about itself. 
 
