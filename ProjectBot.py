@@ -7,14 +7,7 @@ from food import *
 import time
 
 
-#tp3 timesheet
-#sunday dec 2: 1:30 pm - 2:30 pm 
-#monday dec 3: 4:30 Am - 6 am, 12:00-1:30 pm, 7:30-8:15 pm, 10:00-11:30 pm
-#tuesday dec 4: 10:30 am - 12:00 pm 
-#wednesday dec 5:
-#ahhhhh thursday dec 6:
-
-prevMess = {"what the fudge": "WAYOOOOOOO"}
+prevMess = {}
 lastMessage = ""
 
 accessToken= "f3zM1Gv02ML0AkBDYE5HRIViBuTqct5IoynHIrDL"
@@ -128,15 +121,18 @@ def process(msg):
     if checkForGreeting(text) != None and answered == False:
         answered = True 
         send(checkForGreeting(text))
-        
+    
+    #checks to see if bot mentioned
     if checkForAboutMe(text) != None and answered == False:
         answered = True 
         send(checkForAboutMe(text))
-        
+    
+    #check to see if the function is triggered 
     if extractKey(text, prevMess)!= None:
         answered = True
         send("Noted!")
-        
+    
+    #check for the course requirements in text
     checkCourseStuff = appropCourseResponse(text)
     if checkCourseStuff != None:
         answered = True

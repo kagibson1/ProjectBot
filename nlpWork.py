@@ -143,7 +143,3 @@ def actuallyRespond(msg): #ideas guided from tutorial
 #print(respond)    
 
 
-#figure out how to respond to -- Do you mean "You like pizza?" ==> "Yes! You like pizza."
-        #whatever I normally respond to that wasn't quite right 
-        #pickle module 
-        #pickle(myDict)

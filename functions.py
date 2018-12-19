@@ -22,14 +22,15 @@ def getRADonner():
     elif findDate() ==  "Wednesday":
         return "Quincy"
     elif findDate() == "Thursday":
-        return "Kumail"
+        return "Hannah"
     elif findDate() == "Friday":
         return "Jason"
     elif findDate() == "Saturday":
         return "Matt"
     elif findDate() == "Sunday":
         return "Kat"
-        
+
+#use for training the bot 
 def fixInput(text, prevMess, lastMessage):
     print("THIS IS TEXT" + text)
     if "‘" in text:
@@ -37,20 +38,19 @@ def fixInput(text, prevMess, lastMessage):
         print("we split", weSplit)
         if weSplit[0].strip() == "did you mean":
             value = weSplit[1][:-1]
-            prevMess[lastMessage] = value[0].upper() + value[1:]
+            prevMess[lastMessage] = value[0].upper() + value[1:] #capitalize first letter
             return("Yeah I meant " +  weSplit[1][:-1])
 
 #checks to see if text contains a restaurant name or if it contains something ish close to a restuarant name 
-#need to tweak to make faster for long inputs (it does work it just isn't great ui)
-def checkForRestaurants(text): #sos how do i make this faster for long names like Taste of India 
+def checkForRestaurants(text): 
     restaurants= {"Au Bon Pain", "Bibimbap", "Bowl Life", "BYOB",
          "Create", "Cucina", "El Gallo", "Entropy", "Exchange",
          "Heinz Cafe", "Innovation","iNoodle", "Resnik Cafe",
          "Nakama", "Nourish", "Pomegranate",
         "La Prima", "Realwich", "Rohr Cafe", "Rooted", 
-        "Schatz", "Seiber Cafe", "Stephanie's", "Underground", "Zebra Lounge"}
-        #removed Black Bar Grill, Tartan Express, Gingers Express, Taste of India
-    
+        "Schatz", "Seiber Cafe", "Stephanie's", "Underground", "Zebra Lounge", 
+        "Black Bar Grill", "Tartan Express", "Gingers Express", "Taste of India"}
+        
     #works for 1 word restaurant names that are correctly spelled 
     for word in text.split(" "):
         if word in restaurants:
@@ -166,11 +166,13 @@ filter_words = set([ "ass", "fucking", "beeyotch", "biatch", "bitch", "chinaman"
     "retard", "shemale", "skank", "slut", "spade", "spic", "spook", "tard",
     "tits", "titt", "trannie", "tranny", "twat", "wetback", "whore", "wop"])
 
+#make sure we don't let the users have bad words
 def checkForBadWords(text):
     for words in filter_words:
         if words in text:
             return ("I am sorry but this chatbot does not support profanity, please send another message but with kindness thanks")
-            
+        
+#for questions about the bot
 def checkForAboutMe(msg):
     meInfo = {"name": "My name is ProjectBot", "age": "I am " + str(date.toordinal(date.today()) - date.toordinal(date(2018,11,16))) + " days old", "why": "I was made for the 15-112 Term Project!"  }
     
@@ -222,7 +224,8 @@ def appropCourseResponse(text):
             return ("The coreqs for " + course + " are " + data["courses"][course]["coreqs"])
     if "description" in text:
         return ("Here is the course description for " + course + ": " + data["courses"][course]["desc"])
-    
+
+#use for training the bot 
 def extractKey(text, prevMess):
     if "remember that if i say " in text:
         first = text.split("remember that if i say ")
@@ -231,7 +234,6 @@ def extractKey(text, prevMess):
         print(second)
         key = second[0].strip()
         print(key)
-        print(key == "kellen is awesome")
         value = second[1].strip()
         value = value[0].upper() + value[1:]
         print(value)
