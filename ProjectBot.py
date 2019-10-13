@@ -13,7 +13,7 @@ lastMessage = ""
 accessToken= "f3zM1Gv02ML0AkBDYE5HRIViBuTqct5IoynHIrDL"
 groupId = "46083099"
 
-#the following functions above the **** were taken from https://jstrieb.github.io/chatbots/
+#the following functions above the **** were developed with my mentor, Jacob Strieb, posted on https://jstrieb.github.io/chatbots/
 
 def send(text):
     data = {"bot_id" : "6d75eacf991926065ef00ee35d", "text": text}
